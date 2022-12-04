@@ -1,0 +1,95 @@
+Q1. What is the purpose of Python's OOP?
+- it is a programming paradigm that uses objects and classes in programming. 
+- It aims to implement real-world entities like inheritance, polymorphisms, encapsulation, etc. in the programming. 
+- The main concept of OOPs is to bind the data and the functions that work on that together as a single unit so that 
+no other part of the code can access this data.
+
+
+Q2. Where does an inheritance search look for an attribute?
+-  An inheritance search looks for an attribute first in the instance object, then in the class the instance was 
+created from, then in all higher superclasses, progressing from left to right (by default). 
+- The search stops at the first place the attribute is found.
+
+Q3. How do you distinguish between a class object and an instance object?
+- Object is an actual thing that is built based on the 'blue print' (like the house). 
+- An instance is a virtual copy (but not a real copy) of the object.
+
+Q4. What makes the first argument in a class’s method function special?
+- The first argument of every class method, including init , is always a reference to the 
+current instance of the class
+
+Q5. What is the purpose of the init method?
+- init method lets the class initialize the object's attributes.
+
+Q6. What is the process for creating a class instance? -  check
+Q7. What is the process for creating a class?
+- class Pokemon:
+    Pass
+pokemon = Pokemon()
+print(pokemon)
+
+Q8. How would you define the superclasses of a class?
+- A superclass is the class from which many subclasses can be created. The subclasses
+inherit the characteristics of a superclass. 
+- The superclass is also known as the parent class or base class
+
+Q9. What is the relationship between classes and modules?
+- Modules are collections of methods and constants. They cannot generate instances. 
+- Classes may generate instances (objects), and have per-instance state (instance variables). 
+
+Q10. How do you make instances and classes?  - check 
+- class Pokemon:
+    Pass
+pokemon = Pokemon()
+print(pokemon)
+
+Q11. Where and how should be class attributes created?
+
+Q12. Where and how are instance attributes created?
+
+Q13. What does the term "self" in a Python class mean?
+
+Q14. How does a Python class handle operator overloading?
+
+Q15. When do you consider allowing operator overloading of your classes?
+
+Q16. What is the most popular form of operator overloading?
+
+Q17. What are the two most important concepts to grasp in order to comprehend Python OOP code?
+
+Q18. Describe three applications for exception processing.
+
+Q19. What happens if you don't do something extra to treat an exception?
+
+Q20. What are your options for recovering from an exception in your script?
+
+Q21. Describe two methods for triggering exceptions in your script.
+
+Q22. Identify two methods for specifying actions to be executed at termination time, regardless of
+whether or not an exception exists.
+
+Q23. What is the purpose of the try statement?
+
+Q24. What are the two most popular try statement variations?
+
+Q25. What is the purpose of the raise statement?
+
+Q26. What does the assert statement do, and what other statement is it like?
+
+Q27. What is the purpose of the with/as argument, and what other statement is it like?
+
+Q28. What are *args, **kwargs?
+
+Q29. How can I pass optional or keyword parameters from one function to another?
+
+Q30. What are Lambda Functions?
+
+Q31. Explain Inheritance in Python with an example?
+
+Q32. Suppose class C inherits from classes A and B as class C(A,B).Classes A and B both have their own versions of method func(). If we call func() from an object of class C, which version gets invoked?
+
+Q33. Which methods/functions do we use to determine the type of instance and inheritance?
+
+Q34.Explain the use of the 'nonlocal' keyword in Python.
+
+Q35. What is the global keyword?
