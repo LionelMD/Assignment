@@ -1,0 +1,199 @@
+- Store raw data into hdfs location 
+
+[cloudera@quickstart workspace]$ hadoop fs -put sales_order_data.csv /input_data
+
+
+- Create a internal hive table "sales_order_csv" which will store csv data 
+sales_order_csv .. make sure to skip header row while creating table
+
+
+create table sales_order_data_csv_v1_1
+(
+ORDERNUMBER int,
+QUANTITYORDERED int,
+PRICEEACH float,
+ORDERLINENUMBER int,
+SALES float,
+STATUS string,
+QTR_ID int,
+MONTH_ID int,
+YEAR_ID int,
+PRODUCTLINE string,
+MSRP int,
+PRODUCTCODE string,
+PHONE string,
+CITY string,
+STATE string,
+POSTALCODE string,
+COUNTRY string,
+TERRITORY string,
+CONTACTLASTNAME string,
+CONTACTFIRSTNAME string,
+DEALSIZE string
+)
+row format delimited
+fields terminated by ','
+tblproperties("skip.header.line.count"="1")
+; 
+
+
+set hive.cli.print.header = true;
+
+
+- load data from hdfs path into "sales_order_csv" 
+load data inpath '/input_data/sales_order_data.csv' into table sales_order_data_csv_v1_1;
+
+select *from sales_order_data_csv_v1_1 limit 5;
+
+
+
+
+- Create an internal hive table which will store data in ORC format "sales_order_orc"
+
+create table sales_order_data_orc_v1_1
+(
+ORDERNUMBER int,
+QUANTITYORDERED int,
+PRICEEACH float,
+ORDERLINENUMBER int,
+SALES float,
+STATUS string,
+QTR_ID int,
+MONTH_ID int,
+YEAR_ID int,
+PRODUCTLINE string,
+MSRP int,
+PRODUCTCODE string,
+PHONE string,
+CITY string,
+STATE string,
+POSTALCODE string,
+COUNTRY string,
+TERRITORY string,
+CONTACTLASTNAME string,
+CONTACTFIRSTNAME string,
+DEALSIZE string
+)
+stored as orc;
+
+
+- Load data from "sales_order_csv" into "sales_order_orc"
+from sales_order_data_csv_v1_1 insert overwrite table sales_order_data_orc_v1_1 select *;
+
+select *from sales_order_data_orc_v1_1 limit 5;
+
+a. Calculate total sales per year
+
+Select YEAR_ID, SUM(SALES) as TOTAL_SALES_PER_YEAR 
+from sales_order_data_orc_v1_1 
+GROUP BY YEAR_ID 
+ORDER BY YEAR_ID;
+
+year_id total_sales_per_year
+2003    3516979.547241211
+2004    4724162.593383789
+2005    1791486.7086791992
+Time taken: 71.408 seconds, Fetched: 3 row(s)
+
+b. Find a product for which maximum orders were placed
+
+SELECT PRODUCTLINE, SUM(QUANTITYORDERED) AS MAX_ORDER 
+FROM sales_order_data_orc_v1_1 
+GROUP BY PRODUCTLINE
+ORDER BY MAX_ORDER DESC LIMIT 1;
+
+OK
+productline     max_order
+Classic Cars    33992
+Time taken: 53.558 seconds, Fetched: 1 row(s)
+
+C.Calculate the total sales for each quarter
+
+SELECT QTR_ID, SUM(SALES) AS SALESPERQUARTER
+FROM sales_order_data_orc_v1_1
+GROUP BY QTR_ID
+ORDER BY SALESPERQUARTER DESC;
+
+qtr_id  salesperquarter
+4       3874780.010925293
+1       2350817.726501465
+2       2048120.3029174805
+3       1758910.808959961
+
+
+d. In which quarter sales was minimum
+
+SELECT QTR_ID, SUM(SALES) AS SALESPERQUARTER
+FROM sales_order_data_orc_v1_1
+GROUP BY QTR_ID
+ORDER BY SALESPERQUARTER ASC LIMIT 1;
+
+qtr_id  salesperquarter
+3       1758910.808959961
+
+e. In which country sales was maximum and in which country sales was minimum
+
+CREATE VIEW SALES_view AS
+SELECT COUNTRY, SUM(SALES) AS COUNTRYSALES
+FROM sales_order_data_orc_v1_1
+GROUP BY COUNTRY;
+
+SELECT * from SALES_view;
+
+SELECT COUNTRY, MAX(COUNTRYSALES) AS SALES
+FROM SALES_view
+GROUP BY COUNTRY
+ORDER BY SALES DESC LIMIT 1;
+
+OK
+country sales
+USA     3627982.825744629
+
+
+SELECT COUNTRY, MIN(COUNTRYSALES)
+AS SALES
+FROM SALES_view
+GROUP BY COUNTRY
+ORDER BY SALES ASC LIMIT 1;
+
+OK
+country sales
+Ireland 57756.43029785156
+Time taken: 54.18 seconds, Fetched: 1 row(s)
+
+
+
+f. Calculate quartelry sales for each city
+
+SELECT CITY, QTR_ID , SUM(SALES)
+FROM sales_order_data_orc_v1_1
+GROUP BY CITY, QTR_ID;
+
+
+
+CREATE VIEW SALES_QT1 AS
+SELECT YEAR_ID, MONTH_ID, SUM(QUANTITYORDERED) AS TOTAL
+FROM sales_order_data_orc_v1_1
+GROUP BY YEAR_ID, MONTH_ID;
+
+SELECT * FROM SALES_QT1;
+
+
+CREATE VIEW SALES_QT2 AS
+SELECT YEAR_ID, MONTH_ID, TOTAL,
+DENSE_RANK() over(PARTITION BY YEAR_ID ORDER BY TOTAL DESC) AS dense_rank
+FROM SALES_QT1;
+
+
+SELECT * FROM SALES_QT2;
+
+SELECT YEAR_ID, MONTH_ID, TOTAL
+FROM SALES_QT2
+WHERE dense_rank = 1;
+
+OK
+year_id month_id        total
+2003    11      10179
+2004    11      10678
+2005    5       4357
+Time taken: 49.753 seconds, Fetched: 3 row(s)
