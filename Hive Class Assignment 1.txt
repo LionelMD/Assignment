@@ -43,7 +43,7 @@ set hive.cli.print.header = true;
 - load data from hdfs path into "sales_order_csv" 
 load data inpath '/input_data/sales_order_data.csv' into table sales_order_data_csv_v1_1;
 
-select *from sales_order_data_csv_v1_1 limit 5;
+select * from sales_order_data_csv_v1_1 limit 5;
 
 
 
